@@ -1,0 +1,35 @@
+{
+  "name": "cryptotipsfront",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@zapjs/bondage": "^2.0.11",
+    "@zapjs/provider": "^2.0.14",
+    "@zapjs/subscriber": "^2.0.10",
+    "bignumber.js": "^7.2.1",
+    "bootstrap": "^4.1.3",
+    "browser-solc": "^1.0.0",
+    "json-loader": "^0.5.7",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-scripts-ts": "2.17.0",
+    "reactstrap": "^6.4.0",
+    "solc": "^0.4.24",
+    "web3": "^1.0.0-beta.35",
+    "web3-provider-engine": "^14.0.6",
+    "web3-utils": "^1.0.0-beta.36"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.9.2",
+    "@types/react": "^16.4.12",
+    "@types/react-dom": "^16.0.7",
+    "typescript": "^3.0.1"
+  }
+}
