@@ -27,9 +27,10 @@ export class FormInputs extends Component {
   render() {
     var row = [];
     for (var i = 0; i < this.props.ncols.length; i++) {
+      console.log(this.props.proprieties[i])
       row.push(
         <div key={i} className={this.props.ncols[i]}>
-          <FieldGroup {...this.props.proprieties[i]} />
+          <FieldGroup value={this.props.parentState} {...this.props.proprieties[i]} />
         </div>
       );
     }

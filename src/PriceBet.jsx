@@ -44,7 +44,10 @@ export default class PriceBet extends React.Component{
 
     render(){
         const components = [(<h4 className="title text-center"></h4>)]
-            components.push(<MakeBet web3={this.web3} betInfo = {this.betInfo} account={this.state.owner} transactionCompleted={this.transactionCompleted}/>)
+            components.push(<MakeBet web3={this.web3} transactionCompleted={this.transactionCompleted}/>)
+            if(this.state.txid){
+              components.push(<p> txid : {this.state.txid}</p>)
+            }
             return (
                 <div className="wrapper">
                     <Grid fluid>

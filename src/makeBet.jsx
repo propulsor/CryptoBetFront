@@ -3,7 +3,9 @@ import  {toBN} from 'web3-utils'
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+import { FormGroup, ControlLabel, FormControl, Row } from "react-bootstrap";
 import * as priceBet from "./json/priceBet";
+import * as Web3 from "web3"
 const steps = ['Make Bet', 'Take Bet', 'Settle']
 
 
@@ -23,37 +25,52 @@ export default class MakeBet extends React.Component{
      player2: '',
      amount: 0
    }
+   betInfo = {}
     constructor(props){
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.onSelect = this.onSelect.bind(this);
     }
 
     handleChange(event){
-     console.log(event.target.name, event.target.value)
-       this.setState({price:event.target.value})
+      let name = event.target.name
+      let coin={}
+      coin[name]=event.target.value
+      this.setState(coin)
+    }
+    onSelect(event){
+     let name = event.target.name
+      let coin={}
+      coin[name]=event.target.value
+     this.setState(coin)
     }
 
     handleSubmit(event){
+     console.log(this.state.coin, this.state.price, this.state.expire, this.state.amount)
      let txid;
-       if(!this.state.price || !this.state.expire || !this.state.coin){
-           alert("Please Enter all value , "+ this.state.price)
-         return
+     console.log(this.state.coin, !(parseFloat(this.state.price)),!(parseInt(this.state.expire)))
+       if(!parseFloat(this.state.price) || !parseInt(this.state.expire) || !this.state.coin){
+           alert("Please Enter all value  "+ this.state.expire)
        }
-       const higher = this.state.side ==="higher"
-      if(this.state.step=0) {//makeBet
-         txid = this.props.betInfo.contract.methods.makeBet(this.state.coin,
-          toBN(this.state.price), higher, toBN(this.state.time))
-          .send({from: this.props.account, gas: 6000000, value: 100000})
-      }
-      else if(this.state.step=1){ //take bet
-        txid = this.props.betInfo.contract.methods.takeBet()
-          .send({from: this.props.account, gas: 6000000, value: 100000})
-      }
-      else if(this.state.step=2){ //settle
-        this.settle();
-      }
-        this.setState({txid,step:this.state.step+1})
+       else {
+         const higher = this.state.side === "higher"
+         if (this.state.step = 0) {//makeBet
+           txid = this.betInfo.contract.methods.makeBet(this.state.coin,
+             toBN(this.state.price), higher, toBN(this.state.expire))
+             .send({from: this.props.account, gas: 6000000, value: this.state.amount})
+           console.log(txid)
+           this.props.transactionCompleted(txid)
+           //this.setState({txid, step: this.state.step + 1})
+         }
+         else if (this.state.step = 1) { //take bet
+           txid = this.props.betInfo.contract.methods.takeBet()
+             .send({from: this.props.account, gas: 6000000, value: 100000})
+         }
+         else if (this.state.step = 2) { //settle
+           this.settle();
+         }
+       }
     }
 
   getCurrentBet = async()=>{
@@ -63,7 +80,7 @@ export default class MakeBet extends React.Component{
     const address = await contract.options.address
     const data = await contract.methods.getBetInfo().call()
     this.betInfo = {address,contract}
-    console.log(data)
+    console.log("this betinfo : ", this.betInfo)
     const coin = data['2']
     const price = data['3']
     const player1 = data['1']
@@ -84,73 +101,106 @@ export default class MakeBet extends React.Component{
           title="Current Bet"
           content={
             <form>
-              <FormInputs
-                ncols={["col-md-5", "col-md-3", "col-md-4"]}
-                proprieties={[
-                  {
-                    label: "Coin",
-                    type: "option",
-                    componentClass: "select",
-                    bsClass: "form-control",
-                    placeholder: "Coin",
-                    defaultValue: this.state.coin,
-                    options: ["BTC", "ETH"]
-                  },
-                  {
-                    label: "Price",
-                    type: "number",
-                    bsClass: "form-control",
-                    placeholder: "Price",
-                    name:'price',
-                    defaultValue: this.state.price
-                  },
-                  {
-                    label: "Prediction",
-                    type: "select",
-                    bsClass: "form-control",
-                    placeholder: this.state.side
-                  }
-                ]}
-                />
-
-              <FormInputs
-                ncols={["col-md-6", "col-md-6"]}
-                proprieties={[
-                  {
-                    label: "Bet value (in wei)",
-                    type: "number",
-                    bsClass: "form-control",
-                    placeholder: "Bet Value",
-                    defaultValue: this.state.amount
-                  },
-                  {
-                    label: "Duration (in minutes)",
-                    type: "number",
-                    bsClass: "form-control",
-                    placeholder: "Duration",
-                    defaultValue: this.state.expire
-                  }
-                ]}
-              />
-              <FormInputs
-                ncols={["col-md-6", "col-md-6"]}
-                proprieties={[
-                  {
-                    label: "Player 1",
-                    type: "text",
-                    bsClass: "form-control",
-                    value: this.state.player1,
-                    disabled:true
-                  },
-                  {
-                    label: "Player2",
-                    type: "text",
-                    bsClass: "form-control",
-                    value: this.state.player2,
-                    disabled:true
-                  }
-                ]}
-              />
+              <Row>
+              <div key={0} className="col-md-5">
+                <FormGroup>
+                  <ControlLabel>Coin</ControlLabel>
+                  <FormControl
+                  type="option"
+                  componentClass="select"
+                  bsClass="form-control"
+                  value={this.state.coin}
+                  name='coin'
+                  onChange={this.onSelect}
+                  >
+                  <option value="BTC">BTC</option>
+                  <option value="ETH">ETH</option>
+                  </FormControl>
+                </FormGroup>
+              </div>
+              <div key={1} className="col-md-3">
+                <FormGroup>
+                  <ControlLabel>Price</ControlLabel>
+                  <FormControl
+                    type="numbers"
+                    bsClass="form-control"
+                    name="price"
+                    value={this.state.price}
+                    onChange={this.handleChange}
+                  />
+                </FormGroup>
+              </div>
+              <div key={2} className="col-md-4">
+                <FormGroup>
+                  <ControlLabel>Prediction</ControlLabel>
+                  <FormControl
+                    type="option"
+                    name="side"
+                    componentClass="select"
+                    bsClass="form-control"
+                    value={this.state.side}
+                    onChange={this.onSelect}
+                  >
+                  <option>Higher</option>
+                  <option>Lower</option>
+                  </FormControl>
+                </FormGroup>
+              </div>
+              </Row>
+              <Row>
+                <div key={0} className="col-md-6">
+                  <FormGroup>
+                    <ControlLabel>Bet value (in wei)</ControlLabel>
+                    <FormControl
+                      type="number"
+                      name="amount"
+                      bsClass="form-control"
+                      placeholder="Bet Value"
+                      value={this.state.amount}
+                      onChange={this.handleChange}
+                    />
+                  </FormGroup>
+                </div>
+                <div key={1} className="col-md-6">
+                  <FormGroup>
+                    <ControlLabel>Duration (in minutes)</ControlLabel>
+                    <FormControl
+                      type="number"
+                      name="expire"
+                      bsClass="form-control"
+                      placeholder="Duration"
+                      value={this.state.expire}
+                      onChange={this.handleChange}
+                    />
+                  </FormGroup>
+                </div>
+              </Row>
+              <Row>
+                <div key={0} className="col-md-6">
+                  <FormGroup>
+                    <ControlLabel>Player1</ControlLabel>
+                    <FormControl
+                      type="text"
+                      bsClass="form-control"
+                      placeholder="Player 1"
+                      value={this.state.player1}
+                      disabled="true"
+                    />
+                  </FormGroup>
+                </div>
+                <div key={1} className="col-md-6">
+                  <FormGroup>
+                    <ControlLabel>Player 2</ControlLabel>
+                    <FormControl
+                      type="text"
+                      bsClass="form-control"
+                      placeholder="Player 2"
+                      value={this.state.player2}
+                      disabled="true"
+                    />
+                  </FormGroup>
+                </div>
+              </Row>
               <Button bsStyle="info" pullRight fill type="submit" onClick={this.handleSubmit}>
                 {steps[this.state.step]}
               </Button>
