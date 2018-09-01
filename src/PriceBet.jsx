@@ -2,9 +2,6 @@ import {ZapSubscriber} from "@zapjs/subscriber";
 import * as React from "react";
 import * as priceBet from "./json/priceBet.json"
 import MakeBet from "makeBet.jsx"
-import TakeBet from "./takeBet"
-import Settle from "./Settle"
-import {WalletCard} from "components/Wallet/WalletCard.jsx"
 import {
     Grid,
     Row,

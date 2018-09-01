@@ -130,7 +130,7 @@ export default class MakeBet extends React.Component{
     const price = data['3']
     const player1 = data['1']
     const player2=data['7']
-    const expire = data['8']
+    const expire = new Date(Date.now() + parseFloat(data['8'])*6000)
     const amount=data['5']
     const step = !data['0'] ? 0 : !data['6']? 1 : 2
     this.state.owner=  accounts[0]
@@ -214,9 +214,9 @@ export default class MakeBet extends React.Component{
                 </div>
                 <div key={1} className="col-md-6">
                   <FormGroup>
-                    <ControlLabel>Duration (in minutes)</ControlLabel>
+                    <ControlLabel>{parseInt(this.state.step)===0? "Expire (in minutes" : "Expire"}</ControlLabel>
                     <FormControl
-                      type="number"
+                      type="text"
                       name="expire"
                       bsClass="form-control"
                       placeholder="Duration"

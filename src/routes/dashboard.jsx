@@ -1,19 +1,19 @@
 // import UserProfile from "views/UserProfile/UserProfile";
-import TableList from "views/TableList/TableList";
+import ManageProvider from "ManageProvider";
 import PriceBet from "PriceBet"
 const dashboardRoutes = [
   {
     path: "/bet",
-    name: "Crypto Bet",
-    icon: "pe-7s-user",
+    name: "Bet",
+    icon: "pe-7s-play",
     component: PriceBet
   },
-  // {
-  //   path: "/table",
-  //   name: "Table List",
-  //   icon: "pe-7s-note2",
-  //   component: TableList
-  // },
+  {
+    path: "/provider",
+    name: "Provider",
+    icon: "pe-7s-user",
+    component: ManageProvider
+  },
 
   { redirect: true, path: "/", to: "/bet", name: "PriceBet" }
 ];
