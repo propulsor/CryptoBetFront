@@ -32,6 +32,12 @@ export default class PriceBet extends React.Component{
 
     constructor(props) {
         super(props);
+        if(!window.web3.isConnected){
+          alert("Meta mask not connected")
+        }
+        if(!window.web3.currentProvider.isMetaMask){
+          alert("MetaMask provider not found")
+        }
         this.web3 = new Web3(window.web3.currentProvider)
     }
 

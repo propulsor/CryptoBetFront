@@ -6,6 +6,9 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import { FormGroup, ControlLabel, FormControl, Row } from "react-bootstrap";
 import * as priceBet from "./json/priceBet";
 import * as Web3 from "web3"
+import {ZapSubscriber} from "@zapjs/subscriber"
+import {ZapBondage} from "@zapjs/bondage";
+import {oracle} from "./config";
 const steps = ['Make Bet', 'Take Bet', 'Settle']
 
 
@@ -16,14 +19,15 @@ const steps = ['Make Bet', 'Take Bet', 'Settle']
 // }
 export default class MakeBet extends React.Component{
    state = {
-       coin:'',
+       coin:"BTC",
        price:0,
        side:'higher',
        expire:0, // minutes
        txid:'',
      player1: '',
      player2: '',
-     amount: 0
+     amount: 0,
+     step:undefined
    }
    betInfo = {}
     constructor(props){
@@ -33,54 +37,86 @@ export default class MakeBet extends React.Component{
         this.onSelect = this.onSelect.bind(this);
     }
 
+
+  settle = async()=>{
+    // approve, bond, query
+    const subscriber = new ZapSubscriber(this.state.owner,{networkId: 42,networkProvider: this.props.web3})
+    const zapBondage = new ZapBondage({networkId: 42,networkProvider: this.props.web3})
+    const zapRequire = await zapBondage.calcZapForDots({
+      dots:1,
+      endpoint:oracle.endpoint,
+      provider:oracle.address
+    })
+    subscriber.zapToken.approve({amount:zapRequire,from:this.state.owner,to:subscriber.zapBondage.contract.options.address})
+    await subscriber.zapBondage.delegateBond({
+      dots:1,
+      endpoint:oracle.endpoint,
+      from:this.state.owner,
+      provider:oracle.address,
+      subscriber:this.betInfo.contract.options.address,
+    })
+    const transaction = await this.betInfo.contract.methods.queryProvider()
+      .send({from:this.state.owner,gas:6000000})
+    this.props.transactionCompleted(transaction.transactionHash)
+  }
     handleChange(event){
       let name = event.target.name
       let coin={}
       coin[name]=event.target.value
-      this.setState(coin)
+      this.setState((p,pr)=>{return {...p,...coin}})
     }
     onSelect(event){
      let name = event.target.name
       let coin={}
       coin[name]=event.target.value
-     this.setState(coin)
+      this.setState((p,pr)=>{return {...p,...coin}})
     }
 
-    handleSubmit(event){
-     console.log(this.state.coin, this.state.price, this.state.expire, this.state.amount)
+    async handleSubmit(event){
+     //console.log(this.state.coin, this.state.price, this.state.expire, this.state.amount)
      let txid;
-     console.log(this.state.coin, !(parseFloat(this.state.price)),!(parseInt(this.state.expire)))
-       if(!parseFloat(this.state.price) || !parseInt(this.state.expire) || !this.state.coin){
-           alert("Please Enter all value  "+ this.state.expire)
-       }
-       else {
-         const higher = this.state.side === "higher"
-         if (this.state.step = 0) {//makeBet
-           txid = this.betInfo.contract.methods.makeBet(this.state.coin,
-             toBN(this.state.price), higher, toBN(this.state.expire))
-             .send({from: this.props.account, gas: 6000000, value: this.state.amount})
-           console.log(txid)
-           this.props.transactionCompleted(txid)
-           //this.setState({txid, step: this.state.step + 1})
+       // if(!parseFloat(this.state.price) || !parseInt(this.state.expire) || !this.state.coin){
+       //     alert("Please Enter all value  "+ this.state.expire)
+       // }
+       // else {
+        if (parseInt(this.state.step)=== 0) {//makeBet
+          // alert(this.state.step)
+          // console.log("making bets")
+           txid = await this.betInfo.contract.methods.makeBet(this.state.coin,
+             toBN(this.state.price),this.state.side==='Higher', toBN(this.state.expire))
+             .send({from: this.state.owner, gas: 6000000, value: this.state.amount})
+           console.log("txid " ,txid)
+           this.props.transactionCompleted(txid.transactionHash)
+           this.setState({txid, step: this.state.step + 1})
+           //this.getCurrentBet()
          }
-         else if (this.state.step = 1) { //take bet
-           txid = this.props.betInfo.contract.methods.takeBet()
-             .send({from: this.props.account, gas: 6000000, value: 100000})
+         else if (parseInt(this.state.step) === 1) { //take bet
+           txid = await this.betInfo.contract.methods.takeBet()
+             .send({from: this.state.owner, gas: 6000000, value: 100000})
+           console.log("txid " ,txid)
+           this.props.transactionCompleted(txid.transactionHash)
+           this.setState({txid, step: this.state.step + 1})
+           this.getCurrentBet()
          }
-         else if (this.state.step = 2) { //settle
+         else if (parseInt(this.state.step) === 2) { //settle
+           alert(this.state.step)
            this.settle();
+           this.getCurrentBet()
          }
-       }
+       //}
     }
 
   getCurrentBet = async()=>{
     const accounts = await this.props.web3.eth.getAccounts()
+    if(!accounts[0]){
+      alert("No account in MetaMask found")
+    }
     const id = await await this.props.web3.eth.net.getId()
     const contract  = new this.props.web3.eth.Contract(priceBet['abi'],priceBet['networks'][id].address)
     const address = await contract.options.address
     const data = await contract.methods.getBetInfo().call()
     this.betInfo = {address,contract}
-    console.log("this betinfo : ", this.betInfo)
+    console.log("this betinfo : ", data)
     const coin = data['2']
     const price = data['3']
     const player1 = data['1']
@@ -110,9 +146,11 @@ export default class MakeBet extends React.Component{
                   componentClass="select"
                   bsClass="form-control"
                   value={this.state.coin}
+                  defaultValue={!!this.state.coin ? this.state.coin :  "BTC"}
                   name='coin'
                   onChange={this.onSelect}
                   >
+                    <option>Select...</option>
                   <option value="BTC">BTC</option>
                   <option value="ETH">ETH</option>
                   </FormControl>
@@ -208,10 +246,13 @@ export default class MakeBet extends React.Component{
 
           }
         />)
-     if(!this.state.player1) {
-       this.getCurrentBet()
-     }
-     return BetCard
+      if(this.state.step===undefined) {
+        this.getCurrentBet()
+        return (<p>Loading Current Bet info...</p>)
+      }
+      else{
+        return BetCard
+      }
     }
 }
 
