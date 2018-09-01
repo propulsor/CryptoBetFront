@@ -158,7 +158,7 @@ export default class MakeBet extends React.Component{
                   defaultValue={!!this.state.coin ? this.state.coin :  "BTC"}
                   name='coin'
                   onChange={this.onSelect}
-                  disabled={parseInt(this.state.step)===0 ? "false": "true"}
+                  disabled={parseInt(this.state.step)===0 ? "": "true"}
                   >
                     <option>Select...</option>
                   <option value="BTC">BTC</option>
@@ -175,7 +175,7 @@ export default class MakeBet extends React.Component{
                     name="price"
                     value={this.state.price}
                     onChange={this.handleChange}
-                    disabled={parseInt(this.state.step)===0 ? "false": "true"}
+                    disabled={parseInt(this.state.step)===0 ? "": "true"}
                   />
                 </FormGroup>
               </div>
@@ -189,7 +189,7 @@ export default class MakeBet extends React.Component{
                     bsClass="form-control"
                     value={this.state.side}
                     onChange={this.onSelect}
-                    disabled={parseInt(this.state.step)===0 ? "false": "true"}
+                    disabled={parseInt(this.state.step)===0 ? "": "true"}
                   >
                   <option>Higher</option>
                   <option>Lower</option>
@@ -208,7 +208,7 @@ export default class MakeBet extends React.Component{
                       placeholder="Bet Value"
                       value={this.state.amount}
                       onChange={this.handleChange}
-                      disabled={parseInt(this.state.step)===0 ? "false": "true"}
+                      disabled={parseInt(this.state.step)===0 ? "": "true"}
                     />
                   </FormGroup>
                 </div>
@@ -220,9 +220,9 @@ export default class MakeBet extends React.Component{
                       name="expire"
                       bsClass="form-control"
                       placeholder="Duration"
-                      value={this.state.expire}
+                      value={parseInt(this.state.step)===0 ? 0 : this.state.expire}
                       onChange={this.handleChange}
-                      disabled={parseInt(this.state.step)===0 ? "false": "true"}
+                      disabled={parseInt(this.state.step)===0 ? "": "true"}
                     />
                   </FormGroup>
                 </div>

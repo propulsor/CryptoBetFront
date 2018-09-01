@@ -78,7 +78,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="wrapper">
-        <NotificationSystem ref="notificationSystem" style={style} />
+        {/*<NotificationSystem ref="notificationSystem" style={style} />*/}
         <Sidebar {...this.props} />
         <div id="main-panel" className="main-panel" ref="mainPanel">
           <Header {...this.props} />
