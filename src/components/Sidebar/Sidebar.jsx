@@ -55,7 +55,6 @@ class Sidebar extends Component {
         </div>
         <div className="sidebar-wrapper">
           <ul className="nav">
-            {this.state.width <= 991 ? <HeaderLinks /> : null}
             {dashboardRoutes.map((prop, key) => {
               if (!prop.redirect)
                 return (
