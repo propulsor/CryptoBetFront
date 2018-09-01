@@ -13,7 +13,8 @@ export default class Provider extends React.Component {
         init:false,
         provider:ZapProvider,
         pubkey:'',
-        title:''
+        title:'',
+      providerOwner:''
     }
 
     // private _pollingIntervalId: any;
@@ -38,7 +39,7 @@ export default class Provider extends React.Component {
             curve = await provider.getCurve(this.state.endpoint)
             init=true
             return this.setState((prev,props)=>{
-                return {...prev,accounts,curve,init,provider,pubkey, title}
+                return {...prev,accounts,curve,init,provider,pubkey, title,providerOwner}
             })
         }
         else{
@@ -75,7 +76,7 @@ export default class Provider extends React.Component {
             return (
                 <ProviderCard className="card card-user"
                     name={info.title}
-                    owner={info.accounts[0]}
+                    owner={info.providerOwner}
                     pubkey={info.pubkey}
                     endpoint={info.endpoint}
                     curve={info.curve.values}

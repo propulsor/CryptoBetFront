@@ -40,24 +40,34 @@ export default class MakeBet extends React.Component{
 
   settle = async()=>{
     // approve, bond, query
-    const subscriber = new ZapSubscriber(this.state.owner,{networkId: 42,networkProvider: this.props.web3})
-    const zapBondage = new ZapBondage({networkId: 42,networkProvider: this.props.web3})
-    const zapRequire = await zapBondage.calcZapForDots({
-      dots:1,
-      endpoint:oracle.endpoint,
-      provider:oracle.address
-    })
-    subscriber.zapToken.approve({amount:zapRequire,from:this.state.owner,to:subscriber.zapBondage.contract.options.address})
-    await subscriber.zapBondage.delegateBond({
-      dots:1,
-      endpoint:oracle.endpoint,
-      from:this.state.owner,
-      provider:oracle.address,
-      subscriber:this.betInfo.contract.options.address,
-    })
-    const transaction = await this.betInfo.contract.methods.queryProvider()
-      .send({from:this.state.owner,gas:6000000})
-    this.props.transactionCompleted(transaction.transactionHash)
+    if(this.state.owner !== this.state.player1 || this.state.owner !== this.state.player2){
+      alert("You have to be one of the players to be able to settle")
+      return
+    }
+    else {
+      const subscriber = new ZapSubscriber(this.state.owner, {networkId: 42, networkProvider: this.props.web3})
+      const zapBondage = new ZapBondage({networkId: 42, networkProvider: this.props.web3})
+      const zapRequire = await zapBondage.calcZapForDots({
+        dots: 1,
+        endpoint: oracle.endpoint,
+        provider: oracle.address
+      })
+      subscriber.zapToken.approve({
+        amount: zapRequire,
+        from: this.state.owner,
+        to: subscriber.zapBondage.contract.options.address
+      })
+      await subscriber.zapBondage.delegateBond({
+        dots: 1,
+        endpoint: oracle.endpoint,
+        from: this.state.owner,
+        provider: oracle.address,
+        subscriber: this.betInfo.contract.options.address,
+      })
+      const transaction = await this.betInfo.contract.methods.queryProvider()
+        .send({from: this.state.owner, gas: 6000000})
+      this.props.transactionCompleted(transaction.transactionHash)
+    }
   }
     handleChange(event){
       let name = event.target.name
@@ -99,7 +109,6 @@ export default class MakeBet extends React.Component{
            this.getCurrentBet()
          }
          else if (parseInt(this.state.step) === 2) { //settle
-           alert(this.state.step)
            this.settle();
            this.getCurrentBet()
          }
@@ -149,6 +158,7 @@ export default class MakeBet extends React.Component{
                   defaultValue={!!this.state.coin ? this.state.coin :  "BTC"}
                   name='coin'
                   onChange={this.onSelect}
+                  disabled={parseInt(this.state.step)===0 ? "false": "true"}
                   >
                     <option>Select...</option>
                   <option value="BTC">BTC</option>
@@ -165,6 +175,7 @@ export default class MakeBet extends React.Component{
                     name="price"
                     value={this.state.price}
                     onChange={this.handleChange}
+                    disabled={parseInt(this.state.step)===0 ? "false": "true"}
                   />
                 </FormGroup>
               </div>
@@ -178,6 +189,7 @@ export default class MakeBet extends React.Component{
                     bsClass="form-control"
                     value={this.state.side}
                     onChange={this.onSelect}
+                    disabled={parseInt(this.state.step)===0 ? "false": "true"}
                   >
                   <option>Higher</option>
                   <option>Lower</option>
@@ -196,6 +208,7 @@ export default class MakeBet extends React.Component{
                       placeholder="Bet Value"
                       value={this.state.amount}
                       onChange={this.handleChange}
+                      disabled={parseInt(this.state.step)===0 ? "false": "true"}
                     />
                   </FormGroup>
                 </div>
@@ -209,6 +222,7 @@ export default class MakeBet extends React.Component{
                       placeholder="Duration"
                       value={this.state.expire}
                       onChange={this.handleChange}
+                      disabled={parseInt(this.state.step)===0 ? "false": "true"}
                     />
                   </FormGroup>
                 </div>
