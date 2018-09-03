@@ -130,7 +130,7 @@ export default class MakeBet extends React.Component{
     const price = data['3']
     const player1 = data['1']
     const player2=data['7']
-    const expire = new Date(Date.now() + parseFloat(data['8'])*6000)
+    const expire = parseInt(data['8'])!==0 ?  new Date(Date.now() + parseFloat(data['8'])*6000) : 0
     const amount=data['5']
     const step = !data['0'] ? 0 : !data['6']? 1 : 2
     this.state.owner=  accounts[0]
@@ -220,7 +220,7 @@ export default class MakeBet extends React.Component{
                       name="expire"
                       bsClass="form-control"
                       placeholder="Duration"
-                      value={parseInt(this.state.step)===0 ? 0 : this.state.expire}
+                      value={this.state.expire}
                       onChange={this.handleChange}
                       disabled={parseInt(this.state.step)===0 ? "": "true"}
                     />
