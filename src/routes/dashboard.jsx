@@ -1,13 +1,13 @@
 // import UserProfile from "views/UserProfile/UserProfile";
 import ManageProvider from "ManageProvider";
-import PriceBet from "PriceBet"
+import Prediction from "Prediction"
 import Faucet from "Faucet"
 const dashboardRoutes = [
   {
-    path: "/bet",
-    name: "Bet",
+    path: "/prediction",
+    name: "Predictions",
     icon: "pe-7s-play",
-    component: PriceBet
+    component: Prediction
   },
   {
     path: "/provider",
@@ -22,7 +22,7 @@ const dashboardRoutes = [
     component: Faucet
   },
 
-  { redirect: true, path: "/", to: "/bet", name: "PriceBet" }
+  { redirect: true, path: "/", to: "/prediction", name: "Prediction" }
 ];
 
 export default dashboardRoutes;

@@ -1,6 +1,5 @@
 import {ZapSubscriber} from "@zapjs/subscriber";
 import * as React from "react";
-import * as priceBet from "./json/priceBet.json"
 import MakeBet from "makeBet.jsx"
 import {
     Grid,
@@ -16,7 +15,7 @@ import Provider from "./Provider"
 import Accounts from "./Accounts";
 
 
-export default class PriceBet extends React.Component{
+export default class Prediction extends React.Component{
     betInfo
     state = {
         betInfo: {},

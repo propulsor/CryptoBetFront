@@ -14,8 +14,6 @@ import './index.css';
 import InstallMetaMask from "./InstallMetaMask"
 import registerServiceWorker from './registerServiceWorker';
 import Web3 from "web3"
-// import Provider from "./Provider"
-import Subscriber from "./PriceBet";
 let web3
 
 const App = () => {
